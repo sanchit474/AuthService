@@ -1,0 +1,1 @@
+﻿# Top-level .gitignore\n# Java / Maven\n/target/\n/*.log\n/.mvn/\n# Backend\n/backend/target/\n# Node / Frontend\n/frontend/node_modules/\n/frontend/dist/\n# IDEs\n/.idea/\n/.vscode/\n/*.iml\n# OS\n.DS_Store\nThumbs.db\n.env

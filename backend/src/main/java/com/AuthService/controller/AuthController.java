@@ -1,14 +1,9 @@
 package com.AuthService.controller;
 
-import com.AuthService.config.JwtUtils;
-import com.AuthService.io.AuthRequest;
-import com.AuthService.io.AuthResponse;
-import com.AuthService.io.ForgotPasswordRequest;
-import com.AuthService.io.ResetPasswordRequest;
-import com.AuthService.service.AppUserDetailService;
-import com.AuthService.service.ProfileService;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -17,12 +12,21 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
+import com.AuthService.config.JwtUtils;
+import com.AuthService.io.AuthRequest;
+import com.AuthService.io.AuthResponse;
+import com.AuthService.io.ForgotPasswordRequest;
+import com.AuthService.io.ResetPasswordRequest;
+import com.AuthService.service.AppUserDetailService;
+import com.AuthService.service.ProfileService;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
@@ -62,6 +66,17 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body("Invalid email or password");
         }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout() {
+        ResponseCookie cookie = ResponseCookie.from("jwt", "")
+                .httpOnly(true)
+                .path("/")
+                .maxAge(Duration.ZERO)
+                .sameSite("Strict")
+                .build();
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body("Logged out");
     }
 
     private void authenticate(String email, String password) {

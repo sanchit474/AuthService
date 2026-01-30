@@ -1,11 +1,7 @@
 package com.AuthService.controller;
 
-import com.AuthService.io.ProfileRequest;
-import com.AuthService.io.ProfileResponse;
-import com.AuthService.service.EmailService;
-import com.AuthService.service.ProfileService;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,7 +10,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Map;
+import com.AuthService.io.ProfileRequest;
+import com.AuthService.io.ProfileResponse;
+import com.AuthService.service.EmailService;
+import com.AuthService.service.ProfileService;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
@@ -46,6 +48,20 @@ public class ProfileController {
             profileService.verifyOtp(email, otp);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    // Resend verification OTP to a given email
+    @PostMapping("/send-otp")
+    public void resendOtp(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        if (email == null || email.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email is required");
+        }
+        try {
+            profileService.sendOtp(email);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 
